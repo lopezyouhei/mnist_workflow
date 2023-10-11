@@ -33,6 +33,16 @@ class LoadMNIST():
         return trainset, testset
     
     def load_tensor(self, batch_size=32):
+        """Transform MNIST dataset to tensor with values [0, 1] 
+        and return train and test loaders. User can define the batch size.
+
+        Args:
+            batch_size (int, optional): Batch size for train and test loader. 
+            Defaults to 32.
+
+        Returns:
+            torch.utils.data.data.dataloader.DataLoader: train and test loader
+        """
 
         train_set, test_set = self.load_raw(transform=transforms.ToTensor())
 
@@ -44,5 +54,23 @@ class LoadMNIST():
                                                   shuffle=True)
         
         return train_loader, test_loader
+    
+    def get_statistics(loader):
+        len_loader = len(loader)
 
+        mean, var = 0.0, 0.0
+        for images, _ in loader:
+            mean += images.mean()
+        mean /= len_loader
 
+        for images, _ in loader:
+            var += (images - mean).pow(2).mean()
+        std = (var/len_loader)**0.5
+
+        mean = mean.item()
+        std = std.item()
+
+        print("Tensor mean and standard deviation")
+        print(f"Mean: {mean:.3f}, StDev: {std:.3f}")
+        print("Images (8-bit) mean and standard deviation")
+        print(f"Mean:{int(mean*255)}, StDev: {int(std*255)}")
