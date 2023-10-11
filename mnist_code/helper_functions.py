@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import math
 
 def visualize_mnist(loader, num_images=8):
@@ -39,7 +40,22 @@ def get_statistics(loader):
     print(f"Mean: {int(mean*255)}, StDev: {int(std*255)}")
 
 def _get_class_distribution(**datasets):
+    """For each dataset provided create a distribution list and return it as a 
+    dictionary. The datasets should be provided as single word kwarg arguments:
+    i.e. _get_class_distribution(train=train_set, test=test_set)
+    Where 'train' is the name of the dataset and 
+    'train_set' is the torchvision.datasets.mnist.MNIST object
 
+    Returns:
+        dict: class distribution dictionary, key=name, value=distribution
+    """
 
-    for key, value in datasets.items():
-        
+    class_distribution = dict()
+    for name, dataset in datasets.items():
+        labels = np.array(dataset.targets)
+        unique, count = np.unique(labels, return_counts=True)
+        distribution = np.asarrays((unique, count)).T
+        class_distribution[name] = distribution
+
+    return class_distribution
+
