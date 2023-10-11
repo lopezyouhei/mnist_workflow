@@ -14,7 +14,7 @@ class LoadMNIST():
         and test MNIST datasets.
 
         Returns:
-            _type_: _description_
+            torchvision.datasets.mnist.MNIST: mnist train and test set
         """
         raw_data = os.path.join(self.data_folder, 'raw/')
         trainset = datasets.MNIST(root=raw_data,
@@ -28,8 +28,6 @@ class LoadMNIST():
                                  download=True,
                                  transform=transform)
         
-        
-        
         return trainset, testset
     
     def load_tensor(self, batch_size=32):
@@ -41,7 +39,8 @@ class LoadMNIST():
             Defaults to 32.
 
         Returns:
-            torch.utils.data.data.dataloader.DataLoader: train and test loader
+            torch.utils.data.data.dataloader.DataLoader: mnist train and test 
+            loader
         """
 
         train_set, test_set = self.load_raw(transform=transforms.ToTensor())
