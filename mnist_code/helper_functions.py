@@ -46,6 +46,9 @@ def _get_class_distribution(**datasets):
     Where 'train' is the name of the dataset and 
     'train_set' is the torchvision.datasets.mnist.MNIST object
 
+    Best practice is to place the datasets in the following order 
+    (if available): train, validation, test
+
     Returns:
         dict: class distribution dictionary, key=name, value=distribution
     """
