@@ -3,19 +3,34 @@ import numpy as np
 import math
 
 def visualize_mnist(loader, num_images=8):
+    """Print examples from a loader object with labels above each image.
 
+    Args:
+        loader (torch.utils.data.data.dataloader.DataLoader): torch loader 
+        consisting of image, label pairs
+        num_images (int, optional): Number of images to be displayed over 2 
+        rows. Defaults to 8.
+    """
+    
+    # convert the loader into an iterator
     dataiter = iter(loader)
+    # get images, labels from iterator
+    # length will be same as loader batch size
     images, labels = next(dataiter)
 
+    # create subplot instance with 2 rows
     fig, axes = plt.subplots(nrows=2, 
                              ncols=math.ceil(num_images/2),
                              figsize=(10,2))
-    
+    # ravel the axes: [2,4] -> 8 plots and iterate through them
     for i, ax in enumerate(axes.ravel()):
+        # show i-th image in greyscale
         ax.imshow(images[i].squeeze().numpy(), cmap='gray')
+        # set i-th label as title for i-th image
         ax.title.set_text("Label:" + str(labels[i].item()))
+        # turns off some plot features to improve image visualization
         ax.axis('off')
-    
+    # display plot in tight layout
     plt.tight_layout()
     plt.show()
 
