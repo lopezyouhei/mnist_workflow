@@ -35,22 +35,38 @@ def visualize_mnist(loader, num_images=8):
     plt.show()
 
 def get_statistics(loader):
-    len_loader = len(loader)
+    """Prints the mean and standard deviation of data loader. It's expected 
+    that the loader is only defined with ToTensor() transformation and that the
+    data are single channel images.
 
+    Args:
+        loader (torch.utils.data.data.dataloader.DataLoader): torch dataloader
+    """
+    # length of dataloader -> number of samples in this case
+    len_loader = len(loader)
+    # initialize mean and var
     mean, var = 0.0, 0.0
+    # sum up all images means
     for images, _ in loader:
         mean += images.mean()
+    # divide by length of dataloader to get mean
     mean /= len_loader
-
+    # sum up all images variances, since we subtract mean for each pixel in the
+    # image we have to average all the local variances with ".mean()" to get 
+    # average variance within the image
     for images, _ in loader:
         var += (images - mean).pow(2).mean()
+    # calculate standard deviation
     std = (var/len_loader)**0.5
 
+    # get mean and std value from torch.tensor
     mean = mean.item()
     std = std.item()
 
+    # print tensor and image statistics
     print("Tensor mean and standard deviation")
     print(f"Mean: {mean:.3f}, StDev: {std:.3f}")
+    # convert mean and std to 8-bit format
     print("Images (8-bit) mean and standard deviation")
     print(f"Mean: {int(mean*255)}, StDev: {int(std*255)}")
 
