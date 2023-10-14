@@ -112,14 +112,22 @@ def plot_distribution(**datasets):
     (if available): train, validation, test
     """
 
+    # get dictionary of distributions for each dataset
     distribution_dict = _get_class_distribution(**datasets)
+    # define bar_width depending on number of datasets user has inserted
+    # rounds to 1 decimal, 0.8 is matplotlib default bar width 
     bar_width = round(0.8 / len(distribution_dict), 1)
-
+    # get number of labels in dictionary value
     num_classes = len(next(iter(distribution_dict.values())))
 
+    # create array of length num_classes for defining where each bar will be 
+    # placed
     X_pos_init = np.arange(num_classes)
+    # iterate through dataset in dictionary with a running number i
     for i, (dataset, distribution) in enumerate(distribution_dict.items()):
+        # define bar position depending on which dataset
         x_pos = [x + (i*bar_width) for x in X_pos_init]
+        # plot the bar
         plt.bar(x_pos, distribution[:, 1], width=bar_width, label=dataset)
     
     plt.xlabel('Class Label')
