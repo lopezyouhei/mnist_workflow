@@ -84,12 +84,19 @@ def _get_class_distribution(**datasets):
     Returns:
         dict: class distribution dictionary, key=name, value=distribution
     """
-
+    # instantiate class_distribution dictionary
     class_distribution = dict()
+    # iterate through datasets
     for name, dataset in datasets.items():
+        # create array of labels of all items in dataset
+        # length of array is length of dataset
         labels = np.array(dataset.targets)
+        # order the labels and count number of instances for each label
+        # unique = label, count = # of each label
         unique, count = np.unique(labels, return_counts=True)
+        # combine unique classes and count of the class as an array
         distribution = np.asarray((unique, count)).T
+        # store dataset name and dataset distribution in dictionary
         class_distribution[name] = distribution
 
     return class_distribution
