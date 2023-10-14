@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
+# TODO: implement option for binary comparison in visualize_mnist function
 def visualize_mnist(loader, num_images=8):
     """Print examples from a loader object with labels above each image.
 
@@ -136,3 +137,5 @@ def plot_distribution(**datasets):
     plt.xticks(np.arange(num_classes))
     plt.legend()
     plt.show()
+
+# TODO: implement down-projection methods (e.g. PCA, t-SNE) to explore data
