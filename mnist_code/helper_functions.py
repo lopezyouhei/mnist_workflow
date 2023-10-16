@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 
-# TODO: implement option for binary comparison in visualize_mnist function
-def visualize_mnist(loader, num_images=8):
+def visualize_mnist(loader, num_images=8, 
+                    binary=False, binary_threshold=0.5):
     """Print examples from a loader object with labels above each image.
 
     Args:
@@ -23,15 +23,25 @@ def visualize_mnist(loader, num_images=8):
     fig, axes = plt.subplots(nrows=2, 
                              ncols=math.ceil(num_images/2),
                              figsize=(10,2))
+
     # ravel the axes: [2,4] -> 8 plots and iterate through them
     for i, ax in enumerate(axes.ravel()):
+        if binary:
+            im =  images[i] > binary_threshold
+        else:
+            im = images[i]
         # show i-th image in greyscale
-        ax.imshow(images[i].squeeze().numpy(), cmap='gray')
+        ax.imshow(im.squeeze().numpy(), cmap='gray')
         # set i-th label as title for i-th image
         ax.title.set_text("Label:" + str(labels[i].item()))
         # turns off some plot features to improve image visualization
         ax.axis('off')
     # display plot in tight layout
+    if binary:
+        fig.suptitle(f"Binary - Threshold({binary_threshold})")
+    else:
+        fig.suptitle("Grayscale")
+
     plt.tight_layout()
     plt.show()
 
