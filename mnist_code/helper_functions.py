@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import torch
 
 def visualize_mnist(loader, num_images=8, 
                     binary=False, binary_threshold=0.5):
@@ -45,6 +46,27 @@ def visualize_mnist(loader, num_images=8,
     plt.tight_layout()
     plt.show()
 
+def _print_statistics(mean, stdev):
+    if type(mean)==float and type(stdev)==float:
+        # print tensor and image statistics
+        print("Tensor mean and standard deviation")
+        print(f"Mean: {mean:.3f}, StDev: {stdev:.3f}")
+        # convert mean and std to 8-bit format
+        print("Images (8-bit) mean and standard deviation")
+        print(f"Mean: {int(mean*255)}, StDev: {int(stdev*255)}")
+    
+    elif type(mean)==dict and type(stdev)==dict:
+        for i in range(len(mean)):
+            class_mean = mean[i]
+            class_stdev = stdev[i]
+            # print tensor and image statistics
+            print(f"Label {i}:\n")
+            print("Tensor mean and standard deviation")
+            print(f"Mean: {class_mean:.3f}, StDev: {class_stdev:.3f}")
+            # convert mean and std to 8-bit format
+            print("Images (8-bit) mean and standard deviation")
+            print(f"Mean: {int(class_mean*255)}, StDev: {int(class_stdev*255)}\n")
+
 def get_statistics(loader):
     """Prints the mean and standard deviation of data loader. It's expected 
     that the loader is only defined with ToTensor() transformation and that the
@@ -68,18 +90,44 @@ def get_statistics(loader):
     for images, _ in loader:
         var += (images - mean).pow(2).mean()
     # calculate standard deviation
-    std = (var/len_loader)**0.5
+    stdev = (var/len_loader)**0.5
 
     # get mean and std value from torch.tensor
     mean = mean.item()
-    std = std.item()
+    stdev = stdev.item()
+    _print_statistics(mean, stdev)
+    
 
-    # print tensor and image statistics
-    print("Tensor mean and standard deviation")
-    print(f"Mean: {mean:.3f}, StDev: {std:.3f}")
-    # convert mean and std to 8-bit format
-    print("Images (8-bit) mean and standard deviation")
-    print(f"Mean: {int(mean*255)}, StDev: {int(std*255)}")
+def get_class_statistics(loader):
+    
+    class_means = {i: 0.0 for i in range(10)}
+    class_vars = {i: 0.0 for i in range(10)}
+    class_counts = {i: 0 for i in range(10)}
+    
+    for images, labels in loader:
+        for i in range(10):
+            class_images = images[labels == i]
+            if class_images.nelement() > 0:
+                class_means[i] += class_images.mean().item()
+                class_counts[i] += 1
+    
+    for i in range(10):
+        class_means[i] /= class_counts[i]
+    
+    # Calculate variance for each class
+    for images, labels in loader:
+        for i in range(10):
+            class_images = images[labels == i]
+            if class_images.nelement() > 0:
+                class_vars[i] += ((class_images - class_means[i]).pow(2).mean().item())
+
+    for i in range(10):
+        class_vars[i] /= class_counts[i]
+
+    # Calculate standard deviation for each class
+    class_stdevs = {i: class_vars[i]**0.5 for i in range(10)}
+
+    _print_statistics(class_means, class_stdevs)
 
 def _get_class_distribution(**datasets):
     """For each dataset provided create a distribution list and return it as a 
